@@ -10,7 +10,7 @@ debug: false
 #   article_count: 每个站点最多抓取的文章数量
 spider_settings:
   enable: true
-  json_url: "https://blog.liushen.fun/friend.json"
+  json_url: "https://www.kemiaosw.top/fcircle.json"
   article_count: 5
 
 # 代理配置
@@ -51,7 +51,7 @@ link_check:
   max_workers: 10
   status_api_url: "https://v2.xxapi.cn/api/status?url={url}"
   enable_backlink_check: true
-  author_url: "blog.liushen.fun"
+  author_url: "www.kemiaosw.top"
 
 # 邮件推送功能配置
 # 说明：按计划时间把本轮抓取到的全部友圈文章整理成一封邮件，发送给指定邮箱。
@@ -65,8 +65,8 @@ link_check:
 #       程序会在“计划时间之后的下一次运行”发送，并记录已发送的计划时间，
 #       同一计划时间不会重复发送；如果发送失败，下次运行会自动重试。
 email_push:
-  enable: false
-  to_email: recipient@example.com
+  enable: true
+  to_email: 3149261770@qq.com
   subject: "今天的 RSS 订阅更新"
   body_template: "./templates/rss_template.html"
   cron: "0 8 * * *"
@@ -78,18 +78,18 @@ email_push:
 #   GitHub Actions 会自动提供 GITHUB_REPOSITORY，fork 后通常无需修改这两项。
 rss_subscribe:
   enable: true
-  github_username: willow-god
-  github_repo: Friend-Circle-Lite
-  your_blog_url: https://blog.liushen.fun/
+  github_username: maochenyu-me
+  github_repo: blog-v2-friends-circle
+  your_blog_url: https://www.kemiaosw.top/
   email_template: "./templates/article_notify.html"
   website_info:
-    title: "清羽飞扬"
+    title: "喵洛阁"
 
 # SMTP 配置
 # 说明：用于上方邮件相关功能。如果不使用邮件功能，可关闭 email_push 和 rss_subscribe。
 smtp:
-  email: notify@liushen.fun
-  server: smtp.exmail.qq.com
+  email: 3149261770@qq.com
+  server: smtp.qq.com
   port: 465
   use_tls: true
 
