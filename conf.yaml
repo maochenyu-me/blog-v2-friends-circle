@@ -1,0 +1,102 @@
+# 调试开关
+# 说明：默认关闭。开启后，程序结束前会全量打印 SQLite 缓存表结构与所有数据，并保守清理核心表残留旧字段。
+# 支持环境变量 FCL_DEBUG=1 覆盖此配置。
+debug: false
+
+# 爬虫相关配置
+# 说明：从友链 JSON 中读取站点列表，抓取各站点 RSS 文章，并生成 all.json。
+#   enable:        是否启用爬虫
+#   json_url:      友链 JSON 地址，仅支持网络地址
+#   article_count: 每个站点最多抓取的文章数量
+spider_settings:
+  enable: true
+  json_url: "https://blog.liushen.fun/friend.json"
+  article_count: 5
+
+# 代理配置
+# 说明：用于友链检测和 RSS 抓取。程序会先直连，请求失败且配置了代理时自动走代理。
+#   proxy_url: 代理地址涉及一定违规风险和隐私风险，请尽量不要写入配置文件。
+#              推荐在仓库环境变量 PROXY_URL 中配置，并让此处保持为空。
+#              推荐格式为代理前缀，例如 https://proxy.example.com/
+#              程序会自动拼接为 https://proxy.example.com/https://example.com/feed.xml
+#              如需自行搭建代理，可参考：https://blog.liushen.fun/posts/dd89adc9/
+#              兼容高级格式 https://proxy.example.com?url={url}，但普通反代场景不推荐这样写。
+#              留空则不使用代理。
+proxy_settings:
+  proxy_url: ""
+
+# 数据合并配置
+# 说明：合并多个数据源的结果，比如国内和国外两条线路各自运行后的 all.json、link.json、errors.json。
+#   enable:                是否启用数据合并
+#   remote_base_url:       远程数据源基础 URL，会自动拼接 /all.json、/link.json、/errors.json
+#   merge_article_data:    是否合并友圈文章数据
+#   merge_link_check_data: 是否合并友链可达性数据
+merge_settings:
+  enable: false
+  remote_base_url: "https://fc.liushen.fun"
+  merge_article_data: true
+  merge_link_check_data: true
+
+# 友链可达性检测配置
+# 说明：友圈抓取依赖此检测结果，因此该检测始终启用。旧配置中的 link_check.enable 会被兼容读取但不再生效。
+#   max_age_hours:         同一友链检测结果缓存时间，默认 24 小时
+#   timeout:               单次网页请求超时时间
+#   max_workers:           并发检测数量
+#   status_api_url:        兜底状态码 API；API-only 结果只用于可达性展示，不参与 RSS 抓取
+#   enable_backlink_check: 是否检测友链页是否包含你的站点链接
+#   author_url:            你的站点域名，用于反链检测，建议只填写域名
+link_check:
+  max_age_hours: 24
+  timeout: 15
+  max_workers: 10
+  status_api_url: "https://v2.xxapi.cn/api/status?url={url}"
+  enable_backlink_check: true
+  author_url: "blog.liushen.fun"
+
+# 邮件推送功能配置
+# 说明：按计划时间把本轮抓取到的全部友圈文章整理成一封邮件，发送给指定邮箱。
+#   enable:        是否启用
+#   to_email:      收件邮箱，通常填写作者本人
+#   subject:       邮件主题
+#   body_template: 邮件 HTML 模板，默认使用 ./templates/rss_template.html
+#   cron:          标准 5 段 cron（分 时 日 月 周），按 Asia/Shanghai 时区解释
+#   max_articles:  单封邮件最多展示的文章数，默认 50；避免超过 Gmail 约 102KB 的截断阈值
+# 注意：GitHub Action 每 4 小时运行一次，无法精确在 cron 分钟触发。
+#       程序会在“计划时间之后的下一次运行”发送，并记录已发送的计划时间，
+#       同一计划时间不会重复发送；如果发送失败，下次运行会自动重试。
+email_push:
+  enable: false
+  to_email: recipient@example.com
+  subject: "今天的 RSS 订阅更新"
+  body_template: "./templates/rss_template.html"
+  cron: "0 8 * * *"
+  max_articles: 50
+
+# 邮件 issue 订阅功能配置
+# 说明：从 GitHub issue 中提取订阅邮箱，并推送你自己站点的新文章。
+#   github_username/github_repo 仅在无法从 GITHUB_REPOSITORY / FCL_REPO 解析仓库时兜底；
+#   GitHub Actions 会自动提供 GITHUB_REPOSITORY，fork 后通常无需修改这两项。
+rss_subscribe:
+  enable: true
+  github_username: willow-god
+  github_repo: Friend-Circle-Lite
+  your_blog_url: https://blog.liushen.fun/
+  email_template: "./templates/article_notify.html"
+  website_info:
+    title: "清羽飞扬"
+
+# SMTP 配置
+# 说明：用于上方邮件相关功能。如果不使用邮件功能，可关闭 email_push 和 rss_subscribe。
+smtp:
+  email: notify@liushen.fun
+  server: smtp.exmail.qq.com
+  port: 465
+  use_tls: true
+
+# 特殊 RSS 地址指定
+# 说明：用于指定特殊 RSS 地址，比如 B 站专栏等不常见 RSS 地址后缀。可以置空，但不要删除此项。
+specific_RSS:
+  - name: "阮一峰"
+    url: "http://feeds.feedburner.com/ruanyifeng"
+  # - name: "无名小栈"
+  #   url: "https://blog.imsyy.top/rss.xml"
